@@ -1,31 +1,232 @@
 <template>
-  <div class="Login">
-      <h2>Login</h2>
+<body>
+  <div id="#navigationMenu">
+  <navigationMenu></navigationMenu>
+</div>
 
-      <input type="text" v-model="user.firstName" />
-      <input type="password" v-model="user.password" />
-      <button @click="callLoginService()">Login</button>
-      <h4>Backend response: {{ response }}</h4>
+  <h2>Responsive Social Login Form</h2>
+  <p>Resize the browser window to see the responsive effect. When the screen is less than 650px wide, make the two columns stack on top of each other instead of next to each other.</p>
+
+  <div class="container">
+    <form>
+      <div class="row">
+        <h2 style="text-align:center">Login with Social Media or Manually</h2>
+        <div style="color:red;" id="errorDev"></div>
+        <div class="vl">
+          <span class="vl-innertext">or</span>
+        </div>
+
+        <div class="col">
+          <a href="#" class="fb btn">
+          <i class="fa fa-facebook fa-fw"></i> Login with Facebook
+         </a>
+          <a href="#" class="twitter btn">
+          <i class="fa fa-twitter fa-fw"></i> Login with Twitter
+        </a>
+          <a href="#" class="google btn"><i class="fa fa-google fa-fw">
+          </i> Login with Google+
+        </a>
+        </div>
+
+        <div class="col">
+          <div class="hide-md-lg">
+            <p>Or sign in manually:</p>
+          </div>
+
+          <input type="text" v-model="user.firstName" placeholder="Username" required>
+          <input type="password" v-model="user.password" placeholder="Password" required>
+          <input type="submit" @click="callLoginService()" value="Login">
+        </div>
+
+      </div>
+    </form>
   </div>
+
+  <div class="bottom-container">
+    <div class="row">
+      <div class="col">
+        <a href="#" style="color:white" class="btn">Sign up</a>
+      </div>
+      <div class="col">
+        <a href="#" style="color:white" class="btn">Forgot password?</a>
+      </div>
+    </div>
+  </div>
+
+</body>
 </template>
 
-<script type="text/javascript" src="login.js"></script>
+<script>
+import {
+  AXIOS
+} from './api-src'
 
+export default {
+  name: 'Login',
+  data() {
+    return {
+      response: [],
+      errors: [],
+      user: {
+        password: '',
+        firstName: '',
+        id: 0
+      }
+    }
+  },
+  methods: {
+    callLoginService() {
+      var params = new URLSearchParams()
+      params.append('username', this.user.firstName)
+      params.append('password', this.user.password)
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-h1, h2 {
-  font-weight: normal;
+      AXIOS.post(`/login`, params)
+        .then(response => {
+        this.response = response.data
+        if(this.response.userName != null){
+          this.$router.push('/home')
+        }
+        else {
+          document.getElementById("errorDev").innerHTML = "User name or password is incorrect";
+        }
+        })
+        .catch(e => {
+          this.errors.push(e)
+        })
+    }
+  }
 }
-ul {
-  list-style-type: none;
-  padding: 0;
+</script>
+
+<style>
+body {
+  font-family: Arial, Helvetica, sans-serif;
 }
-li {
+
+* {
+  box-sizing: border-box;
+}
+
+/* style the container */
+.container {
+  position: relative;
+  border-radius: 5px;
+  background-color: #f2f2f2;
+  padding: 20px 0 30px 0;
+}
+
+/* style inputs and link buttons */
+input,
+.btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 4px;
+  margin: 5px 0;
+  opacity: 0.85;
   display: inline-block;
-  margin: 0 10px;
+  font-size: 17px;
+  line-height: 20px;
+  text-decoration: none;
+  /* remove underline from anchors */
 }
-a {
-  color: #42b983;
+
+input:hover,
+.btn:hover {
+  opacity: 1;
+}
+
+/* add appropriate colors to fb, twitter and google buttons */
+.fb {
+  background-color: #3B5998;
+  color: white;
+}
+
+.twitter {
+  background-color: #55ACEE;
+  color: white;
+}
+
+.google {
+  background-color: #dd4b39;
+  color: white;
+}
+
+/* style the submit button */
+input[type=submit] {
+  background-color: #4CAF50;
+  color: white;
+  cursor: pointer;
+}
+
+input[type=submit]:hover {
+  background-color: #45a049;
+}
+
+/* Two-column layout */
+.col {
+  float: left;
+  width: 50%;
+  margin: auto;
+  padding: 0 50px;
+  margin-top: 6px;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* vertical line */
+.vl {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%);
+  border: 2px solid #ddd;
+  height: 175px;
+}
+
+/* text inside the vertical line */
+.vl-innertext {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #f1f1f1;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  padding: 8px 10px;
+}
+
+/* hide some text on medium and large screens */
+.hide-md-lg {
+  display: none;
+}
+
+/* bottom container */
+.bottom-container {
+  text-align: center;
+  background-color: #666;
+  border-radius: 0px 0px 4px 4px;
+}
+
+/* Responsive layout - when the screen is less than 650px wide, make the two columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 650px) {
+  .col {
+    width: 100%;
+    margin-top: 0;
+  }
+
+  /* hide the vertical line */
+  .vl {
+    display: none;
+  }
+
+  /* show the hidden text on small screens */
+  .hide-md-lg {
+    display: block;
+    text-align: center;
+  }
 }
 </style>
