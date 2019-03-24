@@ -1,101 +1,69 @@
 <template>
-<body>
-  <div id="#navigationMenu">
-  <navigationMenu></navigationMenu>
-</div>
+  <b-container class="bv-example-row">
+    <b-row>
+      <H2 style="padding: 7px 25px;">Login with your account or create a new one</H2>
+    </b-row>
+    <b-row>
+      <b-col>
+        <form id="signUpForm">
+          <input type="text" v-model="signUpData.firstName" placeholder="Username" required>
+          <input type="email" v-model="signUpData.email" placeholder="Email" required>
+          <input type="password" v-model="signUpData.password" placeholder="Password" required>
+          <input type="submit" @click="callSignUpService()" value="Sign Up">
+        </form>
+      </b-col>
 
-  <h2>Responsive Social Login Form</h2>
-  <p>Resize the browser window to see the responsive effect. When the screen is less than 650px wide, make the two columns stack on top of each other instead of next to each other.</p>
-
-  <div class="container">
-    <form>
-      <div class="row">
-        <h2 style="text-align:center">Login with Social Media or Manually</h2>
-        <div style="color:red;" id="errorDev"></div>
-        <div class="vl">
-          <span class="vl-innertext">or</span>
-        </div>
-
-        <div class="col">
-          <a href="#" class="fb btn">
-          <i class="fa fa-facebook fa-fw"></i> Login with Facebook
-         </a>
-          <a href="#" class="twitter btn">
-          <i class="fa fa-twitter fa-fw"></i> Login with Twitter
-        </a>
-          <a href="#" class="google btn"><i class="fa fa-google fa-fw">
-          </i> Login with Google+
-        </a>
-        </div>
-
-        <div class="col">
-          <div class="hide-md-lg">
-            <p>Or sign in manually:</p>
-          </div>
-
-          <input type="text" v-model="user.firstName" placeholder="Username" required>
-          <input type="password" v-model="user.password" placeholder="Password" required>
+      <b-col>
+        <form id="loginForm">
+          <input type="text" v-model="loginData.firstName" placeholder="Username" required>
+          <input type="password" v-model="loginData.password" placeholder="Password" required>
           <input type="submit" @click="callLoginService()" value="Login">
-        </div>
-
-      </div>
-    </form>
-  </div>
-
-  <div class="bottom-container">
-    <div class="row">
-      <div class="col">
-        <a href="#" style="color:white" class="btn">Sign up</a>
-      </div>
-      <div class="col">
-        <a href="#" style="color:white" class="btn">Forgot password?</a>
-      </div>
-    </div>
-  </div>
-
-</body>
+        </form>
+      </b-col>
+    </b-row>
+  </b-container>
 </template>
 
 <script>
-import {
-  AXIOS
-} from './api-src'
+import { AXIOS } from "./api-src";
 
 export default {
-  name: 'Login',
+  name: "Login",
   data() {
     return {
       response: [],
       errors: [],
-      user: {
-        password: '',
-        firstName: '',
-        id: 0
+      loginData: {
+        password: "",
+        firstName: ""
+      },
+      signUpData: {
+        password: "",
+        firstName: "",
+        email: ""
       }
-    }
+    };
   },
   methods: {
     callLoginService() {
-      var params = new URLSearchParams()
-      params.append('username', this.user.firstName)
-      params.append('password', this.user.password)
+      var params = new URLSearchParams();
+      params.append("username", this.loginData.firstName);
+      params.append("password", this.loginData.password);
 
       AXIOS.post(`/login`, params)
         .then(response => {
-        this.response = response.data
-        if(this.response.userName != null){
-          this.$router.push('/home')
-        }
-        else {
-          document.getElementById("errorDev").innerHTML = "User name or password is incorrect";
-        }
+          this.response = response.data;
+          if (this.response.userName != null) {
+            this.$router.replace("/Home");
+          }
         })
         .catch(e => {
-          this.errors.push(e)
-        })
-    }
+          this.errors.push(e);
+        });
+    },
+    callSignUpService() {}
   }
-}
+};
 </script>
 
 <style>
@@ -136,30 +104,14 @@ input:hover,
   opacity: 1;
 }
 
-/* add appropriate colors to fb, twitter and google buttons */
-.fb {
-  background-color: #3B5998;
-  color: white;
-}
-
-.twitter {
-  background-color: #55ACEE;
-  color: white;
-}
-
-.google {
-  background-color: #dd4b39;
-  color: white;
-}
-
 /* style the submit button */
-input[type=submit] {
-  background-color: #4CAF50;
+input[type="submit"] {
+  background-color: #4caf50;
   color: white;
   cursor: pointer;
 }
 
-input[type=submit]:hover {
+input[type="submit"]:hover {
   background-color: #45a049;
 }
 
@@ -179,54 +131,11 @@ input[type=submit]:hover {
   clear: both;
 }
 
-/* vertical line */
-.vl {
-  position: absolute;
-  left: 50%;
-  transform: translate(-50%);
-  border: 2px solid #ddd;
-  height: 175px;
-}
-
-/* text inside the vertical line */
-.vl-innertext {
-  position: absolute;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #f1f1f1;
-  border: 1px solid #ccc;
-  border-radius: 50%;
-  padding: 8px 10px;
-}
-
-/* hide some text on medium and large screens */
-.hide-md-lg {
-  display: none;
-}
-
-/* bottom container */
-.bottom-container {
-  text-align: center;
-  background-color: #666;
-  border-radius: 0px 0px 4px 4px;
-}
-
 /* Responsive layout - when the screen is less than 650px wide, make the two columns stack on top of each other instead of next to each other */
 @media screen and (max-width: 650px) {
   .col {
     width: 100%;
     margin-top: 0;
-  }
-
-  /* hide the vertical line */
-  .vl {
-    display: none;
-  }
-
-  /* show the hidden text on small screens */
-  .hide-md-lg {
-    display: block;
-    text-align: center;
   }
 }
 </style>

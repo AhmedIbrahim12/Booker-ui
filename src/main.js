@@ -3,13 +3,14 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import Home from '@/components/Home'
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
 Vue.config.productionTip = false
 
-/* eslint-disable no-new */
-
-Vue.component('navigationMenu',{
-   template : '<Home/>'
+Vue.component('navigationMenu', require('./components/NavigationMenu.vue').default);
+Vue.component('successAlert', {
+  props: ['message','visible','status'],
+  template: '<b-alert :show="visible" :variant="status" dismissible>{{message}}</b-alert>'
 });
 
 new Vue({
@@ -19,8 +20,3 @@ new Vue({
   template: '<App/>'
 })
 
-new Vue({
-  el: '#navigationMenu',
-  components: { Home },
-  template: '<Home/>'
-})
